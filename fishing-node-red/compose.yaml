@@ -1,0 +1,45 @@
+services:
+  node-red:
+    build: .
+    environment:
+      TZ: Asia/Hong_Kong
+      NODE_ENV: production
+      MONGO_URL: mongodb://mongo:27017
+    ports:
+      - '127.0.0.1:1880:1880'
+    volumes:
+      - node_red_data:/data
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+  agent:
+    build: ./agent
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    environment:
+      PORT: 3000
+      DATA_URL: http://node-red:1880/fishing/api
+      AGENT_MODEL: ${AGENT_MODEL:-builtin}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    depends_on:
+      - node-red
+    restart: unless-stopped
+  mongo:
+    image: mongo:7.0
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.adminCommand({ping:1})']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+volumes:
+  mongo_data:
+  node_red_data:

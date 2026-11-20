@@ -1,0 +1,23 @@
+# Secrets & Environment
+.env
+.env.*
+!.env.example
+**/fishing-node-red/.env
+**/fishing-node-red/.env.*
+!**/fishing-node-red/.env.example
+
+# Dependencies & Caches
+node_modules/
+__pycache__/
+*.pyc
+
+# Local Backups, Previews & Archives
+.backups/
+.preview/
+**/fishing-node-red/.backups/
+**/fishing-node-red/.preview/
+*.zip
+*.tar.gz
+*.log
+.DS_Store
+Thumbs.db
